@@ -1,0 +1,12 @@
+{% extends 'checkerapp/base.html' %}
+{% block content %}
+<h2>AI Checker Results</h2>
+<ul>
+  {% for entry in entries %}
+    <li>
+      <strong>{{ entry.maker }}</strong>: {{ entry }}<br/>
+      <em>AI Decision:</em> {{ entry.ai_decision }}
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %}

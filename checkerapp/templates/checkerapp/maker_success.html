@@ -1,0 +1,15 @@
+{% extends "checkerapp/base.html" %}
+
+{% block content %}
+  <h3>Submission Successful ✅</h3>
+  <p>Your entry has been saved and will be verified by the AI Checker.</p>
+
+  {% if ai_result %}
+    <h4>AI Validation Result:</h4>
+    <pre>{{ ai_result }}</pre>
+  {% else %}
+    <p>AI validation result not available yet.</p>
+  {% endif %}
+
+  <a href="{% url 'maker_form' %}" class="btn btn-secondary">Submit Another</a>
+{% endblock %}
