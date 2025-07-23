@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Checker Dashboard</h2>
+  <ul>
+    {% for entry in forms %}
+      <li>
+        {{ entry.customer_name }} - {{ entry.beneficiary_name }}
+        [<a href="{% url 'edit_form' entry.id %}">Edit</a>]
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

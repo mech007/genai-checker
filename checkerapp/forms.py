@@ -1,6 +1,20 @@
 # checkerapp/forms.py
 from django import forms
-from .models import MakerFormEntry
+from django.contrib.auth.models import User
+from .models import Profile, MakerFormEntry
+
+class RegisterForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    role = forms.ChoiceField(choices=Profile.USER_TYPES)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password']
+
+class MakerFormEntryForm(forms.ModelForm):
+    class Meta:
+        model = MakerFormEntry
+        exclude = ['maker', 'submitted_at', 'ai_decision']
 
 class MakerEntryForm(forms.ModelForm):
     class Meta:

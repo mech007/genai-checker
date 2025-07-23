@@ -1,0 +1,46 @@
+<h2>Edit Form (Checker)</h2>
+
+<div style="display: flex; gap: 30px;">
+  <div style="flex: 1;">
+    <h3>Submitted Data (Masked)</h3>
+    <p>Customer: {{ form_entry.customer_name|slice:":2" }}*****</p>
+    <p>Account #: ****{{ form_entry.customer_account_number|slice:"-2:" }}</p>
+    <p>Currency: {{ form_entry.currency }}</p>
+    <p>Beneficiary: {{ form_entry.beneficiary_name|slice:":2" }}*****</p>
+    <p>Beneficiary Account #: ****{{ form_entry.beneficiary_account_number|slice:"-2:" }}</p>
+    <p>Branch Code: {{ form_entry.branch_code }}</p>
+  </div>
+
+  <div style="flex: 1;">
+    <h3>Checker Input</h3>
+    <form method="post">
+      {% csrf_token %}
+
+      <label>Customer Name:</label><br>
+      <input type="text" name="customer_name"><br><br>
+
+      <label>Customer Account #:</label><br>
+      <input type="text" name="customer_account_number"><br><br>
+
+      <label>Currency:</label><br>
+      <input type="text" name="currency"><br><br>
+
+      <label>Beneficiary Name:</label><br>
+      <input type="text" name="beneficiary_name"><br><br>
+
+      <label>Beneficiary Account #:</label><br>
+      <input type="text" name="beneficiary_account_number"><br><br>
+
+      <label>Branch Code:</label><br>
+      <input type="text" name="branch_code"><br><br>
+
+      <label>AI Decision / Notes:</label><br>
+      <textarea name="decision" placeholder="Enter AI decision or notes here...">{{ form_entry.ai_decision }}</textarea><br><br>
+
+      <button name="action" value="upload">Upload</button>
+      <button name="action" value="approve">Approve</button>
+      <button name="action" value="reject">Reject</button>
+      <a href="{% url 'dashboard' %}" style="margin-left: 10px;">Cancel</a>
+    </form>
+  </div>
+</div>

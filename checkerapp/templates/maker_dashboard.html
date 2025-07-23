@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div style="text-align: right; margin-bottom: 10px;">
+    <a href="{% url 'logout' %}">Logout</a>
+  </div>
+
+  <h2>Maker Dashboard</h2>
+  <a href="{% url 'submit_form' %}">Submit New Form</a>
+  <ul>
+    {% for entry in forms %}
+      <li>{{ entry.customer_name }} - {{ entry.beneficiary_name }} ({{ entry.submitted_at }})</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

@@ -1,5 +1,5 @@
 <!-- checkerapp/templates/checkerapp/maker_form.html -->
-{% extends "checkerapp/base.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block content %}
@@ -8,5 +8,6 @@
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="btn btn-primary">Submit</button>
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary" style="margin-left: 10px;">Cancel</a>
   </form>
 {% endblock %}

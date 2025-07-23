@@ -1,33 +1,70 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .forms import MakerEntryForm
-from .models import MakerFormEntry
-from .llm_service import validate_form_with_llm  # <-- AI logic
+from .forms import RegisterForm, MakerFormEntryForm
+from .models import Profile, MakerFormEntry  # <-- import Profile and MakerFormEntry here
 
-@login_required
-def maker_form_view(request):
+def register_view(request):
     if request.method == 'POST':
-        form = MakerEntryForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
-            entry = form.save(commit=False)
-            entry.maker = request.user
-            entry.save()
-
-            decision = validate_form_with_llm(entry)
-            entry.ai_decision = decision
-            entry.save()
-
-            return render(request, 'checkerapp/maker_success.html', {'entry': entry, 'ai_result': decision})
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            Profile.objects.create(user=user, role=form.cleaned_data['role'])  # now this works
+            return redirect('/')
     else:
-        form = MakerEntryForm()
-    return render(request, 'checkerapp/maker_form.html', {'form': form})
+        form = RegisterForm()
+    return render(request, 'register.html', {'form': form})
 
-# ✅ New view to show AI-powered checker review
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        if user:
+            login(request, user)
+            return redirect('dashboard')
+    return render(request, 'login.html')
+
 @login_required
-def checker_view(request):
-    entries = MakerFormEntry.objects.all()
-    for entry in entries:
-        result = validate_form_with_llm(str(entry))  # You can customize prompt logic
-        entry.ai_decision = result
-        entry.save()
-    return render(request, 'checkerapp/checker.html', {'entries': entries})
+def dashboard_view(request):
+    profile = request.user.profile
+    if profile.role == 'maker':
+        forms = MakerFormEntry.objects.filter(maker=request.user)
+        return render(request, 'maker_dashboard.html', {'forms': forms})
+    elif profile.role == 'checker':
+        forms = MakerFormEntry.objects.all()
+        return render(request, 'checker_dashboard.html', {'forms': forms})
+    return redirect('login')
+
+@login_required
+def submit_form_view(request):
+    if request.user.profile.role != 'maker':
+        return redirect('dashboard')
+    if request.method == 'POST':
+        form = MakerFormEntryForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.maker = request.user
+            instance.save()
+            return redirect('dashboard')
+    else:
+        form = MakerFormEntryForm()
+    return render(request, 'maker_form.html', {'form': form})
+
+@login_required
+def edit_form_view(request, form_id):
+    if request.user.profile.role != 'checker':
+        return redirect('dashboard')
+    form_entry = MakerFormEntry.objects.get(id=form_id)
+    if request.method == 'POST':
+        decision = request.POST.get('decision')
+        form_entry.ai_decision = decision
+        form_entry.save()
+        return redirect('dashboard')
+    return render(request, 'edit_form.html', {'form_entry': form_entry})
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
