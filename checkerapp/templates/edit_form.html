@@ -13,8 +13,11 @@
 
   <div style="flex: 1;">
     <h3>Checker Input</h3>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
+
+      <label>Upload Document:</label><br>
+      <input type="file" name="supporting_file" accept=".pdf,.doc,.docx,.txt,.eml"><br><br>
 
       <label>Customer Name:</label><br>
       <input type="text" name="customer_name"><br><br>
